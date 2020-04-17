@@ -12,11 +12,9 @@ import java.util.UUID;
 
 import ru.evotor.devices.commons.DeviceServiceConnector;
 import ru.evotor.devices.commons.exception.DeviceServiceException;
-import ru.evotor.devices.commons.exception.ServiceNotConnectedException;
 import ru.evotor.devices.commons.printer.PrinterDocument;
 import ru.evotor.devices.commons.printer.printable.IPrintable;
 import ru.evotor.devices.commons.printer.printable.PrintableText;
-import ru.evotor.devices.commons.services.PrinterService;
 import ru.evotor.framework.component.PaymentPerformer;
 import ru.evotor.framework.core.Error;
 import ru.evotor.framework.core.IntegrationException;
@@ -37,7 +35,7 @@ import ru.evotor.framework.receipt.ReceiptApi;
 import ru.evotor.framework.receipt.position.SettlementMethod;
 import ru.webdevels.shopscript.api.Order;
 
-public class MyReceipt {
+class MyReceipt {
 
     private final Activity activity;
     private final Order order;
@@ -93,7 +91,7 @@ public class MyReceipt {
                 printGroup,
                 order.getPositionList(settlementMethod),
                 payment,
-                new HashMap<Payment, BigDecimal>(), new HashMap<String, BigDecimal>()
+                new HashMap<>(), new HashMap<>()
         );
         ArrayList<Receipt.PrintReceipt> listDocs = new ArrayList<>();
         listDocs.add(printReceipt);

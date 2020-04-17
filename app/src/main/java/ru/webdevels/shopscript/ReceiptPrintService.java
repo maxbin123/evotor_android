@@ -2,7 +2,6 @@ package ru.webdevels.shopscript;
 
 import android.content.SharedPreferences;
 import android.os.RemoteException;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
@@ -30,7 +29,6 @@ import ru.evotor.framework.receipt.ReceiptApi;
 import ru.evotor.framework.receipt.position.SettlementMethod;
 import ru.evotor.framework.receipt.print_extras.PrintExtraPlacePositionFooter;
 import ru.evotor.framework.receipt.print_extras.PrintExtraPlacePrintGroupHeader;
-import ru.webdevels.shopscript.api.Order;
 
 public class ReceiptPrintService extends IntegrationService {
     @Nullable
@@ -106,7 +104,7 @@ public class ReceiptPrintService extends IntegrationService {
         return map;
     }
 
-    public String getSettlementName(SettlementMethod settlementMethod) {
+    private String getSettlementName(SettlementMethod settlementMethod) {
         if (settlementMethod instanceof SettlementMethod.FullSettlement) {
             return "ПОЛНЫЙ РАСЧЕТ";
         }

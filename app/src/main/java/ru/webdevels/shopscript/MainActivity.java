@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -27,10 +28,10 @@ import ru.webdevels.shopscript.api.OrdersResponse;
 
 public class MainActivity extends AppCompatActivity {
 
-    List<Order> orderList;
-    RecyclerView recyclerView;
-    RecyclerAdapter recyclerAdapter;
-    ProgressBar progressBar;
+    private List<Order> orderList;
+    private RecyclerView recyclerView;
+    private RecyclerAdapter recyclerAdapter;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<OrdersResponse> call, Response<OrdersResponse> response) {
                 OrdersResponse ordersResponse = response.body();
-                orderList = ordersResponse.data;
+                orderList = Objects.requireNonNull(ordersResponse).data;
                 recyclerAdapter.setOrderList(orderList);
                 progressBar.setVisibility(View.GONE);
             }

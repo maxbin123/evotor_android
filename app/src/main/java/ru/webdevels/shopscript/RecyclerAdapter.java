@@ -77,13 +77,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Myview
     }
 
     public class MyviewHolder extends RecyclerView.ViewHolder {
-        TextView order_number;
-        TextView customer_name;
-        TextView total_str;
-        TextView create_datetime_str;
-        CardView cardView;
+        final TextView order_number;
+        final TextView customer_name;
+        final TextView total_str;
+        final TextView create_datetime_str;
+        final CardView cardView;
 
-        public MyviewHolder(@NonNull View itemView) {
+        MyviewHolder(@NonNull View itemView) {
             super(itemView);
             order_number = itemView.findViewById(R.id.title);
             customer_name = itemView.findViewById(R.id.customer_name);

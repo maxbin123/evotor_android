@@ -1,8 +1,5 @@
 package ru.webdevels.shopscript.api;
 
-import android.app.Activity;
-import android.widget.Toast;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -18,22 +15,10 @@ import java.util.List;
 import java.util.UUID;
 
 import ru.evotor.framework.component.PaymentPerformer;
-import ru.evotor.framework.core.Error;
-import ru.evotor.framework.core.IntegrationException;
-import ru.evotor.framework.core.IntegrationManagerCallback;
-import ru.evotor.framework.core.IntegrationManagerFuture;
-import ru.evotor.framework.core.action.command.open_receipt_command.OpenSellReceiptCommand;
-import ru.evotor.framework.core.action.command.print_receipt_command.PrintReceiptCommandResult;
-import ru.evotor.framework.core.action.command.print_receipt_command.PrintSellReceiptCommand;
 import ru.evotor.framework.core.action.event.receipt.changes.position.PositionAdd;
 import ru.evotor.framework.core.action.event.receipt.changes.position.SetExtra;
-import ru.evotor.framework.navigation.NavigationApi;
-import ru.evotor.framework.payment.PaymentSystem;
-import ru.evotor.framework.payment.PaymentType;
 import ru.evotor.framework.receipt.Payment;
 import ru.evotor.framework.receipt.Position;
-import ru.evotor.framework.receipt.PrintGroup;
-import ru.evotor.framework.receipt.Receipt;
 import ru.evotor.framework.receipt.position.SettlementMethod;
 
 public class Order {
@@ -73,21 +58,21 @@ public class Order {
     public String idStr;
     @SerializedName("total_str")
     @Expose
-    public String totalStr;
+    private String totalStr;
     @SerializedName("create_datetime_str")
     @Expose
     public String createDatetimeStr;
     @SerializedName("style")
     @Expose
-    public String style;
+    private String style;
     @SerializedName("encoded_state_id")
     @Expose
     public String encodedStateId;
     @SerializedName("items")
     @Expose
-    public List<Item> items = null;
+    private final List<Item> items = null;
 
-    public String toJson() {
+    private String toJson() {
         Gson gson = new GsonBuilder().create();
         return gson.toJson(this);
     }

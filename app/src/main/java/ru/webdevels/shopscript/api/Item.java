@@ -10,14 +10,14 @@ import ru.evotor.framework.core.action.event.receipt.changes.position.PositionAd
 import ru.evotor.framework.receipt.Position;
 import ru.evotor.framework.receipt.position.SettlementMethod;
 
-public class Item {
+class Item {
 
     @SerializedName("id")
     @Expose
     public String id;
     @SerializedName("name")
     @Expose
-    public String name;
+    private String name;
     @SerializedName("product_id")
     @Expose
     public String productId;
@@ -32,18 +32,18 @@ public class Item {
     public String type;
     @SerializedName("service_id")
     @Expose
-    public Object serviceId;
+    private Object serviceId;
     @SerializedName("price")
     @Expose
-    public BigDecimal price;
+    private BigDecimal price;
     @SerializedName("quantity")
     @Expose
-    public BigDecimal quantity;
+    private BigDecimal quantity;
     @Expose
     public String purchasePrice;
     @SerializedName("total_discount")
     @Expose
-    public BigDecimal totalDiscount;
+    private BigDecimal totalDiscount;
     @SerializedName("tax_percent")
     @Expose
     public Object taxPercent;
@@ -55,7 +55,7 @@ public class Item {
     public Product product;
     @SerializedName("sku")
     @Expose
-    public Sku sku;
+    private Sku sku;
 //    @SerializedName("product_codes")
 //    @Expose
 //    public List<ProductCode> productCodes = null;

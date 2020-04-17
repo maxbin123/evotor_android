@@ -12,6 +12,6 @@ public class OrdersResponse {
     public String status;
     @SerializedName("data")
     @Expose
-    public List<Order> data = null;
+    public final List<Order> data = null;
 
 }

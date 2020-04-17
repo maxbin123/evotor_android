@@ -24,11 +24,11 @@ import ru.webdevels.shopscript.api.OrdersResponse;
 
 public class ReceiptLauncher extends AppCompatActivity {
 
-    String settlement;
-    String action;
-    String payment;
-    boolean display;
-    ProgressBar progressBar;
+    private String settlement;
+    private String action;
+    private String payment;
+    private boolean display;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +68,7 @@ public class ReceiptLauncher extends AppCompatActivity {
         });
     }
 
-    public void processOrder(Order order) {
+    private void processOrder(Order order) {
         if (display) {
             LinearLayout form = findViewById(R.id.action_form);
             RadioGroup settlementGroup = findViewById(R.id.settlement);
