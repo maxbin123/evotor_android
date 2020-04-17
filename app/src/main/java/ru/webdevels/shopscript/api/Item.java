@@ -1,0 +1,98 @@
+package ru.webdevels.shopscript.api;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+
+import ru.evotor.framework.core.action.event.receipt.changes.position.PositionAdd;
+import ru.evotor.framework.receipt.Position;
+import ru.evotor.framework.receipt.position.SettlementMethod;
+
+public class Item {
+
+    @SerializedName("id")
+    @Expose
+    public String id;
+    @SerializedName("name")
+    @Expose
+    public String name;
+    @SerializedName("product_id")
+    @Expose
+    public String productId;
+    @SerializedName("sku_id")
+    @Expose
+    public String skuId;
+    @SerializedName("sku_code")
+    @Expose
+    public String skuCode;
+    @SerializedName("type")
+    @Expose
+    public String type;
+    @SerializedName("service_id")
+    @Expose
+    public Object serviceId;
+    @SerializedName("price")
+    @Expose
+    public BigDecimal price;
+    @SerializedName("quantity")
+    @Expose
+    public BigDecimal quantity;
+    @Expose
+    public String purchasePrice;
+    @SerializedName("total_discount")
+    @Expose
+    public BigDecimal totalDiscount;
+    @SerializedName("tax_percent")
+    @Expose
+    public Object taxPercent;
+    @SerializedName("tax_included")
+    @Expose
+    public String taxIncluded;
+    @SerializedName("product")
+    @Expose
+    public Product product;
+    @SerializedName("sku")
+    @Expose
+    public Sku sku;
+//    @SerializedName("product_codes")
+//    @Expose
+//    public List<ProductCode> productCodes = null;
+    @SerializedName("expected_product_code_blocks_count")
+    @Expose
+    public String expectedProductCodeBlocksCount;
+//    @SerializedName("marks")
+//    @Expose
+//    public List<String > marks;
+
+
+    Position getPosition(SettlementMethod settlementMethod) {
+        Position.Builder builder = Position.Builder.newInstance(
+                UUID.randomUUID().toString(),
+                sku.evotorUuid,
+                name,
+                "шт",
+                0,
+                price,
+                quantity
+        );
+//        builder.setMark(mark);
+        builder.setPriceWithDiscountPosition(getPriceWithDiscountPosition());
+        if (serviceId != null) {
+            builder.toService();
+        }
+        builder.setSettlementMethod(settlementMethod);
+        return builder.build();
+    }
+
+    PositionAdd getPositionAdd(SettlementMethod settlementMethod) {
+        Position position = getPosition(settlementMethod);
+        return new PositionAdd(position);
+    }
+
+    private BigDecimal getPriceWithDiscountPosition() {
+        return price.subtract(totalDiscount.divide(quantity));
+    }
+
+}

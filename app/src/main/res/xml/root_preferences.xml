@@ -1,0 +1,35 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="Подключение">
+        <EditTextPreference
+            app:key="token"
+            app:title="Токен для подключения"
+            app:useSimpleSummaryProvider="true"
+            app:isPreferenceVisible="false"/>
+
+        <EditTextPreference
+            app:key="root_url"
+            app:title="Адрес корня сайта"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:key="frontend_url"
+            app:title="Адрес витрины магазина"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Печать чека">
+        <SwitchPreferenceCompat
+            app:key="print_order_number"
+            app:title="Номер заказа" />
+
+        <SwitchPreferenceCompat
+            app:key="print_settlement"
+            app:title="Признак расчёта" />
+
+        <SwitchPreferenceCompat
+            app:key="print_mark"
+            app:title="Код маркировки" />
+
+    </PreferenceCategory>
+</PreferenceScreen>
