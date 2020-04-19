@@ -7,6 +7,7 @@
     <uses-permission android:name="ru.evotor.pushnotifications.PUSH_RECEIVE" />
     <uses-permission android:name="ru.evotor.permission.SELL_INTEGRATION_SERVICE" />
     <uses-permission android:name="ru.evotor.permission.receipt.printExtra.SET" />
+    <uses-permission android:name="ru.evotor.permission.PRINT_Z_REPORT" />
 
     <application
         android:allowBackup="true"
@@ -40,6 +41,20 @@
             </intent-filter>
         </service>
 
+
+        <service
+            android:name=".ReceiptExtraSetService"
+            android:icon="@mipmap/ic_launcher"
+            android:label="Shop-Script">
+            <meta-data
+                android:name="ru.evotor.sales_screen.BACKGROUND_COLOR"
+                android:value="#3b2" />
+            <intent-filter android:priority="20">
+                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="evo.v2.receipt.sell.receiptDiscount" />
+            </intent-filter>
+        </service>
+
         <receiver
             android:name=".PushReceiver"
             android:permission="ru.evotor.pushnotifications.PUSH_SENDER">
@@ -60,6 +75,10 @@
         <meta-data
             android:name="app_uuid"
             android:value="271354c5-ceae-4ac7-8029-14fd40fe3973" />
+
+        <meta-data android:name="io.sentry.dsn" android:value="https://d6a6a3c0100e43ed9c1e4a573cd8a542@o380146.ingest.sentry.io/5205653" />
+
+
     </application>
 
 </manifest>

@@ -14,10 +14,14 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import io.sentry.core.Sentry;
+import io.sentry.core.protocol.User;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -43,6 +47,17 @@ public class MainActivity extends AppCompatActivity {
         if (base_url.isEmpty()) {
             startActivity(new Intent(this, SettingsActivity.class));
             return;
+        }
+
+        // sentry
+        try {
+            URL frontendUrl = new URL(base_url);
+            String host = frontendUrl.getHost();
+            User sentryUser = new User();
+            sentryUser.setUsername(host);
+            Sentry.setUser(sentryUser);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
         }
 
         // loader

@@ -99,7 +99,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Myview
                     String order_id = order.id;
                     Intent intent = new Intent(activity, ReceiptLauncher.class)
                             .putExtra("order_id", order_id)
-                            .putExtra("display", true);
+                            .putExtra("display", "true");
                     activity.startActivity(intent);
                 }
             });

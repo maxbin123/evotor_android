@@ -23,6 +23,7 @@ import ru.evotor.framework.core.IntegrationManagerFuture;
 import ru.evotor.framework.core.action.command.open_receipt_command.OpenSellReceiptCommand;
 import ru.evotor.framework.core.action.command.print_receipt_command.PrintReceiptCommandResult;
 import ru.evotor.framework.core.action.command.print_receipt_command.PrintSellReceiptCommand;
+import ru.evotor.framework.core.action.command.print_z_report_command.PrintZReportCommand;
 import ru.evotor.framework.core.action.event.receipt.changes.position.PositionAdd;
 import ru.evotor.framework.navigation.NavigationApi;
 import ru.evotor.framework.payment.PaymentSystem;
@@ -99,20 +100,29 @@ class MyReceipt {
         new PrintSellReceiptCommand(listDocs, order.getExtra(), order.contact.phone, order.contact.email, BigDecimal.ZERO, null, null).process(activity, new IntegrationManagerCallback() {
             @Override
             public void run(IntegrationManagerFuture integrationManagerFuture) {
-                printOrderId();
+
                 try {
                     IntegrationManagerFuture.Result result = integrationManagerFuture.getResult();
                     switch (result.getType()) {
                         case OK:
                             PrintReceiptCommandResult printSellReceiptResult = PrintReceiptCommandResult.create(result.getData());
                             uuid = printSellReceiptResult.getReceiptUuid();
-//                            printReport();
                             Toast.makeText(activity, "Чек успешно отправлен покупателю", Toast.LENGTH_LONG).show();
+                            printOrderInfo();
                             activity.finish();
                             break;
                         case ERROR:
-                            Toast.makeText(activity, result.getError().getMessage(), Toast.LENGTH_LONG).show();
-                            activity.finish();
+                            if (result.getError().getCode() == PrintReceiptCommandResult.ERROR_CODE_SESSION_TIME_EXPIRED) {
+                                new PrintZReportCommand().process(activity, new IntegrationManagerCallback() {
+                                    @Override
+                                    public void run(IntegrationManagerFuture future) {
+                                        printReceipt();
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(activity, result.getError().getMessage(), Toast.LENGTH_LONG).show();
+                                activity.finish();
+                            }
                             break;
                     }
                 } catch (IntegrationException e) {
@@ -290,7 +300,7 @@ class MyReceipt {
         }.start();
     }
 
-    private void printOrderId() {
+    private void printOrderInfo() {
         DeviceServiceConnector.startInitConnections(activity);
         new Thread() {
             @Override
