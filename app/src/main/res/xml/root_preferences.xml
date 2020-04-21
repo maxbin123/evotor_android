@@ -1,16 +1,6 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory app:title="Подключение">
-        <EditTextPreference
-            app:key="token"
-            app:title="Токен для подключения"
-            app:useSimpleSummaryProvider="true"
-            app:isPreferenceVisible="false"/>
-
-        <EditTextPreference
-            app:key="root_url"
-            app:title="Адрес корня сайта"
-            app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
             app:key="frontend_url"
@@ -24,8 +14,8 @@
             app:title="Номер заказа" />
 
         <SwitchPreferenceCompat
-            app:key="print_settlement"
-            app:title="Признак расчёта" />
+            app:key="print_internet"
+            app:title="Печатать электронные чеки" />
 
         <SwitchPreferenceCompat
             app:key="print_mark"

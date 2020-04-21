@@ -40,7 +40,7 @@ public class ReceiptPrintService extends IntegrationService {
             public void call(@NotNull String s, @NotNull PrintExtraRequiredEvent printExtraRequiredEvent, @NotNull Callback callback) {
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 boolean printOrderNumber = sharedPreferences.getBoolean("print_order_number", false);
-                boolean printSettlement = sharedPreferences.getBoolean("print_settlement", false);
+//                boolean printSettlement = sharedPreferences.getBoolean("print_settlement", false);
                 boolean printMark = sharedPreferences.getBoolean("print_mark", false);
 
                 Receipt receipt = ReceiptApi.getReceipt(ReceiptPrintService.this, Receipt.Type.SELL);
@@ -70,16 +70,17 @@ public class ReceiptPrintService extends IntegrationService {
 
 
 
-                if (printSettlement) {
-                    for (Position position : positionList) {
-                        setPrintExtras.add(new SetPrintExtra(
-                                new PrintExtraPlacePositionFooter(position.getUuid()),
-                                new IPrintable[]{
-                                        new PrintableText(getSettlementName(position.getSettlementMethod()))
-                                }
-                        ));
-                    }
-                }
+//                if (printSettlement) {
+//                    for (Position position : positionList) {
+//                        setPrintExtras.add(new SetPrintExtra(
+//                                new PrintExtraPlacePositionFooter(position.getUuid()),
+//                                new IPrintable[]{
+//                                        new PrintableText(getSettlementName(position.getSettlementMethod()))
+//                                }
+//                        ));
+//                    }
+//                }
+
                 if (printMark) {
                     for (Position position : positionList) {
                         if (position.getMark() != null) {

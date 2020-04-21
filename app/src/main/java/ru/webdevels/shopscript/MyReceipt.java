@@ -2,7 +2,10 @@ package ru.webdevels.shopscript;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.widget.Toast;
+
+import androidx.preference.PreferenceManager;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -85,9 +88,11 @@ class MyReceipt {
     }
 
     private void printReceipt() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+        boolean print = sharedPreferences.getBoolean("print_internet", false);
         HashMap<Payment, BigDecimal> payment = order.buildPayment(paymentPerformer);
         PrintGroup printGroup = new PrintGroup(UUID.randomUUID().toString(),
-                PrintGroup.Type.CASH_RECEIPT, null, null, null, null, true, null, null);
+                PrintGroup.Type.CASH_RECEIPT, null, null, null, null, print, null, null);
         Receipt.PrintReceipt printReceipt = new Receipt.PrintReceipt(
                 printGroup,
                 order.getPositionList(settlementMethod),
@@ -309,15 +314,16 @@ class MyReceipt {
                     Receipt receipt = ReceiptApi.getReceipt(activity, uuid);
                     List<IPrintable> printList = new ArrayList<>();
                     int max_len = DeviceServiceConnector.getPrinterService().getAllowableSymbolsLineLength(ru.evotor.devices.commons.Constants.DEFAULT_DEVICE_INDEX);
-                    printList.add(new PrintableText(center(String.format("^^^^ЗАКАЗ %s^^^^", order.idStr), max_len)));
+                    printList.add(new PrintableText(center(String.format("ЗАКАЗ %s", order.idStr), max_len)));
                     printList.add(new PrintableText(center(String.format("Продажа №%s", receipt.getHeader().getNumber()), max_len)));
+                    printList.add(new PrintableText(String.format("ИТОГ: %.2f", order.total)));
+                    printList.add(new PrintableText(getSettlementName()));
                     if (receipt.getHeader().getClientEmail() != null) {
                         printList.add(new PrintableText(String.format("Email: %s", receipt.getHeader().getClientEmail())));
                     }
                     if (receipt.getHeader().getClientPhone() != null) {
                         printList.add(new PrintableText(String.format("Телефон: %s", receipt.getHeader().getClientPhone())));
                     }
-                    printList.add(new PrintableText(String.format("%0" + max_len + "d", 0).replace("0", "_")));
                     DeviceServiceConnector.getPrinterService().printDocument(
                             ru.evotor.devices.commons.Constants.DEFAULT_DEVICE_INDEX,
                             new PrinterDocument(printList.toArray(new IPrintable[printList.size()])));
@@ -331,10 +337,13 @@ class MyReceipt {
 
     private String getSettlementName() {
         if (settlementMethod instanceof SettlementMethod.FullSettlement) {
-            return "Полный расчет";
+            return "ПОЛНЫЙ РАСЧЕТ";
         }
         if (settlementMethod instanceof SettlementMethod.FullPrepayment) {
-            return "Предоплата 100%";
+            return "ПРЕДОПЛАТА 100%";
+        }
+        if (settlementMethod instanceof SettlementMethod.AdvancePayment) {
+            return "АВАНС";
         }
         return "";
     }
