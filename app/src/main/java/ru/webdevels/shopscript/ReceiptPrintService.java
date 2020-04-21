@@ -15,6 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ru.evotor.devices.commons.DeviceServiceConnector;
+import ru.evotor.devices.commons.exception.DeviceServiceException;
+import ru.evotor.devices.commons.exception.ServiceNotConnectedException;
 import ru.evotor.devices.commons.printer.printable.IPrintable;
 import ru.evotor.devices.commons.printer.printable.PrintableText;
 import ru.evotor.framework.core.IntegrationService;
@@ -38,48 +41,30 @@ public class ReceiptPrintService extends IntegrationService {
         map.put(PrintExtraRequiredEvent.NAME_SELL_RECEIPT, new PrintExtraRequiredEventProcessor() {
             @Override
             public void call(@NotNull String s, @NotNull PrintExtraRequiredEvent printExtraRequiredEvent, @NotNull Callback callback) {
+                List<SetPrintExtra> setPrintExtras = new ArrayList<>();
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 boolean printOrderNumber = sharedPreferences.getBoolean("print_order_number", false);
-//                boolean printSettlement = sharedPreferences.getBoolean("print_settlement", false);
                 boolean printMark = sharedPreferences.getBoolean("print_mark", false);
 
-                Receipt receipt = ReceiptApi.getReceipt(ReceiptPrintService.this, Receipt.Type.SELL);
 
+                Receipt receipt = ReceiptApi.getReceipt(ReceiptPrintService.this, Receipt.Type.SELL);
                 List<Position> positionList = receipt.getPositions();
                 String extra = receipt.getHeader().getExtra();
 
-                List<SetPrintExtra> setPrintExtras = new ArrayList<>();
-
                 try {
+                    int max_len = DeviceServiceConnector.getPrinterService().getAllowableSymbolsLineLength(ru.evotor.devices.commons.Constants.DEFAULT_DEVICE_INDEX);
                     JSONObject order = new JSONObject(extra);
                     if (printOrderNumber && order.has("id_str")) {
-
                         setPrintExtras.add(new SetPrintExtra(
                                 new PrintExtraPlacePrintGroupHeader(null),
                                 new IPrintable[]{
-                                        new PrintableText("        ЗАКАЗ " + order.getString("id_str")),
+                                        new PrintableText(MyReceipt.center("ЗАКАЗ " + order.getString("id_str"), max_len)),
                                 }
                         ));
                     }
-
-                } catch (JSONException e) {
+                } catch (JSONException | DeviceServiceException e) {
                     e.printStackTrace();
                 }
-
-
-
-
-
-//                if (printSettlement) {
-//                    for (Position position : positionList) {
-//                        setPrintExtras.add(new SetPrintExtra(
-//                                new PrintExtraPlacePositionFooter(position.getUuid()),
-//                                new IPrintable[]{
-//                                        new PrintableText(getSettlementName(position.getSettlementMethod()))
-//                                }
-//                        ));
-//                    }
-//                }
 
                 if (printMark) {
                     for (Position position : positionList) {
@@ -96,25 +81,10 @@ public class ReceiptPrintService extends IntegrationService {
                 try {
                     callback.onResult(new PrintExtraRequiredEventResult(setPrintExtras).toBundle());
                 } catch (RemoteException exc) {
-
                     exc.printStackTrace();
                 }
-
             }
         });
         return map;
-    }
-
-    private String getSettlementName(SettlementMethod settlementMethod) {
-        if (settlementMethod instanceof SettlementMethod.FullSettlement) {
-            return "ПОЛНЫЙ РАСЧЕТ";
-        }
-        if (settlementMethod instanceof SettlementMethod.FullPrepayment) {
-            return "ПРЕДОПЛАТА 100%";
-        }
-        if (settlementMethod instanceof SettlementMethod.AdvancePayment) {
-            return "АВАНС";
-        }
-        return "";
     }
 }
