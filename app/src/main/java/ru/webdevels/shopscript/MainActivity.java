@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,9 +34,8 @@ import ru.webdevels.shopscript.api.OrdersResponse;
 public class MainActivity extends AppCompatActivity {
 
     private List<Order> orderList;
-    private RecyclerView recyclerView;
     private RecyclerAdapter recyclerAdapter;
-    private ProgressBar progressBar;
+    private SwipeRefreshLayout swipeContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,17 +60,27 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        // loader
-        progressBar = findViewById(R.id.progressBar);
-
         // recycler
         orderList = new ArrayList<>();
-        recyclerView = findViewById(R.id.recyclerview);
+        RecyclerView recyclerView = findViewById(R.id.recyclerview);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerAdapter = new RecyclerAdapter(this, orderList);
         recyclerView.setAdapter(recyclerAdapter);
 
+        // Swipe to refresh
+        swipeContainer = findViewById(R.id.swipeContainer);
+        swipeContainer.setRefreshing(true);
+        swipeContainer.setOnRefreshListener(this::updateList);
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
+        updateList();
+    }
+
+    private void updateList() {
         // retrofit
         ApiEndpointInterface apiService = ApiClient.getClient(this).create(ApiEndpointInterface.class);
         Call<OrdersResponse> call = apiService.getOrders();
@@ -81,13 +91,13 @@ public class MainActivity extends AppCompatActivity {
                 OrdersResponse ordersResponse = response.body();
                 orderList = Objects.requireNonNull(ordersResponse).data;
                 recyclerAdapter.setOrderList(orderList);
-                progressBar.setVisibility(View.GONE);
+                swipeContainer.setRefreshing(false);
             }
 
             @Override
             public void onFailure(Call<OrdersResponse> call, Throwable t) {
                 Log.v("TAG", "Response = " + t.toString());
-                progressBar.setVisibility(View.GONE);
+                swipeContainer.setRefreshing(false);
             }
         });
     }
