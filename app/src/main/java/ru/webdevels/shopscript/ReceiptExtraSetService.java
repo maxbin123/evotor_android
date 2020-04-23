@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.sentry.core.Sentry;
 import ru.evotor.framework.core.IntegrationService;
 import ru.evotor.framework.core.action.event.receipt.changes.position.IPositionChange;
 import ru.evotor.framework.core.action.event.receipt.changes.position.SetExtra;
@@ -60,6 +61,7 @@ public class ReceiptExtraSetService extends IntegrationService {
                             ));
                 } catch (JSONException | RemoteException e) {
                     e.printStackTrace();
+                    Sentry.captureException(e);
                 }
             }
         });

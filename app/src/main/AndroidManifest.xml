@@ -63,11 +63,20 @@
         </receiver>
 
         <receiver
-            android:name=".ClosedReceiptsReceiver"
+            android:name=".ClosedSellReceiptsReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="evotor.intent.action.receipt.sell.RECEIPT_CLOSED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".ClosedPaybackReceiptsReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="evotor.intent.action.receipt.payback.RECEIPT_CLOSED" />
             </intent-filter>
         </receiver>
 

@@ -23,10 +23,41 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/typeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:text="Признак расчёта:"
+            android:textSize="18sp" />
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_weight="1"
+            android:id="@+id/type"
+            android:checkedButton="@id/sell">
+
+            <RadioButton
+                android:id="@+id/sell"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Продажа" />
+
+            <RadioButton
+                android:id="@+id/payback"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Возврат" />
+
+        </RadioGroup>
+
+        <TextView
             android:id="@+id/actionText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="10dp"
             android:layout_weight="1"
             android:text="Действие:"
             android:textSize="18sp" />
@@ -63,9 +94,9 @@
             android:id="@+id/settlementText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="10dp"
             android:layout_weight="1"
-            android:text="Признак расчёта:"
+            android:text="Способ расчёта:"
             android:textSize="18sp" />
 
         <RadioGroup
@@ -99,7 +130,7 @@
             android:id="@+id/paymentText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="10dp"
             android:layout_weight="1"
             android:text="Оплата:"
             android:visibility="invisible"
@@ -133,17 +164,6 @@
                 android:text="Зачёт аванса" />
 
         </RadioGroup>
-
-        <Switch
-            android:id="@+id/print"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginTop="15dp"
-            android:textSize="18sp"
-            android:enabled="false"
-            android:visibility="invisible"
-            android:text="Напечатать" />
 
         <Button
             android:id="@+id/run"

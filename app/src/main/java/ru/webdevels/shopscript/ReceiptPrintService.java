@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.sentry.core.Sentry;
 import ru.evotor.devices.commons.DeviceServiceConnector;
 import ru.evotor.devices.commons.exception.DeviceServiceException;
 import ru.evotor.devices.commons.exception.ServiceNotConnectedException;
@@ -64,6 +65,7 @@ public class ReceiptPrintService extends IntegrationService {
                     }
                 } catch (JSONException | DeviceServiceException e) {
                     e.printStackTrace();
+                    Sentry.captureException(e);
                 }
 
                 if (printMark) {
@@ -82,6 +84,7 @@ public class ReceiptPrintService extends IntegrationService {
                     callback.onResult(new PrintExtraRequiredEventResult(setPrintExtras).toBundle());
                 } catch (RemoteException exc) {
                     exc.printStackTrace();
+                    Sentry.captureException(exc);
                 }
             }
         });

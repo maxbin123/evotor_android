@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import io.sentry.core.Sentry;
 import ru.evotor.devices.commons.DeviceServiceConnector;
 import ru.evotor.devices.commons.exception.DeviceServiceException;
 import ru.evotor.devices.commons.printer.PrinterDocument;
@@ -23,7 +24,9 @@ import ru.evotor.framework.core.Error;
 import ru.evotor.framework.core.IntegrationException;
 import ru.evotor.framework.core.IntegrationManagerCallback;
 import ru.evotor.framework.core.IntegrationManagerFuture;
+import ru.evotor.framework.core.action.command.open_receipt_command.OpenPaybackReceiptCommand;
 import ru.evotor.framework.core.action.command.open_receipt_command.OpenSellReceiptCommand;
+import ru.evotor.framework.core.action.command.print_receipt_command.PrintPaybackReceiptCommand;
 import ru.evotor.framework.core.action.command.print_receipt_command.PrintReceiptCommandResult;
 import ru.evotor.framework.core.action.command.print_receipt_command.PrintSellReceiptCommand;
 import ru.evotor.framework.core.action.command.print_z_report_command.PrintZReportCommand;
@@ -43,15 +46,17 @@ class MyReceipt {
 
     private final Activity activity;
     private final Order order;
+    private final String type;
     private final String action;
     private final SettlementMethod settlementMethod;
     private final PaymentPerformer paymentPerformer;
 
     private String uuid;
 
-    public MyReceipt(Activity activity, Order order, String action, String settlement, String payment) {
+    public MyReceipt(Activity activity, Order order, String type, String action, String settlement, String payment) {
         this.activity = activity;
         this.order = order;
+        this.type = type;
         this.action = action;
         this.settlementMethod = getSettlementMethod(settlement);
         this.paymentPerformer = getPaymentPerformer(payment);
@@ -67,12 +72,10 @@ class MyReceipt {
 
     private void openReceipt() {
         List<PositionAdd> positionAddList = order.getPositionAddList(settlementMethod);
-
-        new OpenSellReceiptCommand(positionAddList, order.getExtra()).process(
-                activity,
-                new IntegrationManagerCallback() {
-                    @Override
-                    public void run(IntegrationManagerFuture future) {
+        if (type.equals("sell")) {
+            new OpenSellReceiptCommand(positionAddList, order.getExtra()).process(
+                    activity,
+                    future -> {
                         try {
                             IntegrationManagerFuture.Result result = future.getResult();
                             if (result.getType() == IntegrationManagerFuture.Result.Type.OK) {
@@ -80,11 +83,30 @@ class MyReceipt {
                             }
                         } catch (IntegrationException e) {
                             e.printStackTrace();
+                            Sentry.captureException(e);
                         }
                         activity.finish();
                     }
-                }
-        );
+            );
+        } else {
+            new OpenPaybackReceiptCommand(positionAddList, order.getExtra()).process(
+                    activity,
+                    future -> {
+                        try {
+                            IntegrationManagerFuture.Result result = future.getResult();
+                            if (result.getType() == IntegrationManagerFuture.Result.Type.OK) {
+                                activity.startActivity(NavigationApi.createIntentForPaybackReceiptPayment());
+                            }
+                        } catch (IntegrationException e) {
+                            e.printStackTrace();
+                            Sentry.captureException(e);
+                        }
+                        activity.finish();
+                    }
+            );
+        }
+
+
     }
 
     private void printReceipt() {
@@ -102,39 +124,37 @@ class MyReceipt {
         ArrayList<Receipt.PrintReceipt> listDocs = new ArrayList<>();
         listDocs.add(printReceipt);
 
-        new PrintSellReceiptCommand(listDocs, order.getExtra(), order.contact.phone, order.contact.email, BigDecimal.ZERO, null, null).process(activity, new IntegrationManagerCallback() {
-            @Override
-            public void run(IntegrationManagerFuture integrationManagerFuture) {
-
-                try {
-                    IntegrationManagerFuture.Result result = integrationManagerFuture.getResult();
-                    switch (result.getType()) {
-                        case OK:
-                            PrintReceiptCommandResult printSellReceiptResult = PrintReceiptCommandResult.create(result.getData());
-                            uuid = printSellReceiptResult.getReceiptUuid();
-                            Toast.makeText(activity, "Чек успешно отправлен покупателю", Toast.LENGTH_LONG).show();
-                            printOrderInfo();
+        IntegrationManagerCallback callback = integrationManagerFuture -> {
+            try {
+                IntegrationManagerFuture.Result result = integrationManagerFuture.getResult();
+                switch (result.getType()) {
+                    case OK:
+                        PrintReceiptCommandResult printSellReceiptResult = PrintReceiptCommandResult.create(result.getData());
+                        uuid = printSellReceiptResult.getReceiptUuid();
+                        Toast.makeText(activity, "Чек успешно отправлен покупателю", Toast.LENGTH_LONG).show();
+                        printOrderInfo();
+                        activity.finish();
+                        break;
+                    case ERROR:
+                        if (result.getError().getCode() == PrintReceiptCommandResult.ERROR_CODE_SESSION_TIME_EXPIRED) {
+                            new PrintZReportCommand().process(activity, future -> printReceipt());
+                        } else {
+                            Toast.makeText(activity, result.getError().getMessage(), Toast.LENGTH_LONG).show();
                             activity.finish();
-                            break;
-                        case ERROR:
-                            if (result.getError().getCode() == PrintReceiptCommandResult.ERROR_CODE_SESSION_TIME_EXPIRED) {
-                                new PrintZReportCommand().process(activity, new IntegrationManagerCallback() {
-                                    @Override
-                                    public void run(IntegrationManagerFuture future) {
-                                        printReceipt();
-                                    }
-                                });
-                            } else {
-                                Toast.makeText(activity, result.getError().getMessage(), Toast.LENGTH_LONG).show();
-                                activity.finish();
-                            }
-                            break;
-                    }
-                } catch (IntegrationException e) {
-                    e.printStackTrace();
+                        }
+                        break;
                 }
+            } catch (IntegrationException e) {
+                e.printStackTrace();
+                Sentry.captureException(e);
             }
-        });
+        };
+
+        if (type.equals("sell")) {
+            new PrintSellReceiptCommand(listDocs, order.getExtra(), order.contact.phone, order.contact.email, BigDecimal.ZERO, null, null).process(activity, callback);
+        } else {
+            new PrintPaybackReceiptCommand(listDocs, order.getExtra(), order.contact.phone, order.contact.email, null, null, null, null).process(activity, callback);
+        }
     }
 
     private void printReceiptNew() {
@@ -171,6 +191,7 @@ class MyReceipt {
                     }
                 } catch (IntegrationException e) {
                     e.printStackTrace();
+                    Sentry.captureException(e);
                 }
                 activity.finish();
             }
@@ -299,6 +320,7 @@ class MyReceipt {
 
                 } catch (DeviceServiceException e) {
                     e.printStackTrace();
+                    Sentry.captureException(e);
                 }
 
             }
@@ -312,10 +334,11 @@ class MyReceipt {
             public void run() {
                 try {
                     Receipt receipt = ReceiptApi.getReceipt(activity, uuid);
+                    receipt.getHeader().getType();
                     List<IPrintable> printList = new ArrayList<>();
                     int max_len = DeviceServiceConnector.getPrinterService().getAllowableSymbolsLineLength(ru.evotor.devices.commons.Constants.DEFAULT_DEVICE_INDEX);
                     printList.add(new PrintableText(center(String.format("ЗАКАЗ %s", order.idStr), max_len)));
-                    printList.add(new PrintableText(center(String.format("Продажа №%s", receipt.getHeader().getNumber()), max_len)));
+                    printList.add(new PrintableText(center(String.format("%s №%s", getTypeName(receipt.getHeader().getType()), receipt.getHeader().getNumber()), max_len)));
                     printList.add(new PrintableText(String.format("ИТОГ: %.2f", order.total)));
                     printList.add(new PrintableText(getSettlementName()));
                     if (receipt.getHeader().getClientEmail() != null) {
@@ -329,6 +352,7 @@ class MyReceipt {
                             new PrinterDocument(printList.toArray(new IPrintable[printList.size()])));
                 } catch (DeviceServiceException e) {
                     e.printStackTrace();
+                    Sentry.captureException(e);
                 }
 
             }
@@ -346,6 +370,13 @@ class MyReceipt {
             return "АВАНС";
         }
         return "";
+    }
+
+    private String getTypeName(Enum type) {
+        if (type.equals(Receipt.Type.SELL)) {
+            return "Продажа";
+        }
+        return "Возврат";
     }
 
     public static String center(String text, int len) {

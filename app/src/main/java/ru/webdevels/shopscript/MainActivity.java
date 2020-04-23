@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
             Sentry.setUser(sentryUser);
         } catch (MalformedURLException e) {
             e.printStackTrace();
+            Sentry.captureException(e);
         }
 
         // recycler

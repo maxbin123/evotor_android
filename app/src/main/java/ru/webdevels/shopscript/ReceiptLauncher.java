@@ -29,6 +29,7 @@ public class ReceiptLauncher extends AppCompatActivity {
     private String payment;
     private boolean display;
     private ProgressBar progressBar;
+    private String type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,7 @@ public class ReceiptLauncher extends AppCompatActivity {
         settlement = extras.getString("settlement", "fullSettlement");
         payment = extras.getString("payment", "electron");
         action = extras.getString("action", "open");
+        type = extras.getString("type", "sell");
 
         assert order_id != null;
 
@@ -71,10 +73,11 @@ public class ReceiptLauncher extends AppCompatActivity {
     private void processOrder(Order order) {
         if (display) {
             LinearLayout form = findViewById(R.id.action_form);
+            RadioGroup typeGroup = findViewById(R.id.type);
             RadioGroup settlementGroup = findViewById(R.id.settlement);
             RadioGroup paymentGroup = findViewById(R.id.payment);
             RadioGroup actionGroup = findViewById(R.id.action);
-            Switch printSwitch = findViewById(R.id.print);
+//            Switch printSwitch = findViewById(R.id.print);
 
             progressBar.setVisibility(View.GONE);
             RadioButton email = findViewById(R.id.email);
@@ -94,7 +97,7 @@ public class ReceiptLauncher extends AppCompatActivity {
             actionGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
-                    printSwitch.setEnabled(checkedId != R.id.open);
+//                    printSwitch.setEnabled(checkedId != R.id.open);
                     if (checkedId == R.id.open) {
                         paymentGroup.setVisibility(View.INVISIBLE);
                         findViewById(R.id.paymentText).setVisibility(View.INVISIBLE);
@@ -114,6 +117,14 @@ public class ReceiptLauncher extends AppCompatActivity {
             run.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    switch (typeGroup.getCheckedRadioButtonId()) {
+                        case R.id.sell:
+                            type = "sell";
+                            break;
+                        case R.id.payback:
+                            type = "payback";
+                            break;
+                    }
                     switch (settlementGroup.getCheckedRadioButtonId()) {
                         case R.id.fullSettlement:
                             settlement = "fullSettlement";
@@ -149,13 +160,13 @@ public class ReceiptLauncher extends AppCompatActivity {
                     }
                     form.setVisibility(View.GONE);
                     ReceiptLauncher.this.setTitle("Подготовка чека...");
-                    MyReceipt receipt = new MyReceipt(ReceiptLauncher.this, order, action, settlement, payment);
+                    MyReceipt receipt = new MyReceipt(ReceiptLauncher.this, order, type, action, settlement, payment);
                     receipt.process();
                 }
             });
         } else {
             ReceiptLauncher.this.setTitle("Подготовка чека...");
-            MyReceipt receipt = new MyReceipt(ReceiptLauncher.this, order, action, settlement, payment);
+            MyReceipt receipt = new MyReceipt(ReceiptLauncher.this, order, type, action, settlement, payment);
             receipt.process();
         }
     }
