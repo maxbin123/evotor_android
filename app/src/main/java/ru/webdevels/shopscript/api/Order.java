@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import io.sentry.core.Sentry;
 import ru.evotor.framework.component.PaymentPerformer;
 import ru.evotor.framework.core.action.event.receipt.changes.position.PositionAdd;
 import ru.evotor.framework.core.action.event.receipt.changes.position.SetExtra;
@@ -139,6 +140,7 @@ public class Order {
             return new SetExtra(object);
         } catch (JSONException e) {
             e.printStackTrace();
+            Sentry.captureException(e);
         }
         return new SetExtra(new JSONObject());
     }

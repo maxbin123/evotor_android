@@ -36,6 +36,6 @@ public class ClosedSellReceiptsReceiver extends SellReceiptBroadcastReceiver {
             public void onFailure(Call<ReceiptResponse> call1, Throwable t) {
                 Toast.makeText(context, t.getLocalizedMessage(), Toast.LENGTH_LONG).show();
             }
-        }), 10000);   //15 seconds
+        }), 10000);
     }
 }

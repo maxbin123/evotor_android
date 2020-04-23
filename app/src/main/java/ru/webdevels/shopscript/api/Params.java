@@ -43,7 +43,7 @@ public class Params {
 //    public String evotorAction;
     @SerializedName("payment_id")
     @Expose
-    public String paymentId;
+    public String paymentId = "";
 //    @SerializedName("referer_host")
 //    @Expose
 //    public String refererHost;

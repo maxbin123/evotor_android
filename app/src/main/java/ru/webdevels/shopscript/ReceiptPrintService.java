@@ -53,17 +53,16 @@ public class ReceiptPrintService extends IntegrationService {
                 String extra = receipt.getHeader().getExtra();
 
                 try {
-                    int max_len = DeviceServiceConnector.getPrinterService().getAllowableSymbolsLineLength(ru.evotor.devices.commons.Constants.DEFAULT_DEVICE_INDEX);
                     JSONObject order = new JSONObject(extra);
                     if (printOrderNumber && order.has("id_str")) {
                         setPrintExtras.add(new SetPrintExtra(
                                 new PrintExtraPlacePrintGroupHeader(null),
                                 new IPrintable[]{
-                                        new PrintableText(MyReceipt.center("ЗАКАЗ " + order.getString("id_str"), max_len)),
+                                        new PrintableText("        ЗАКАЗ " + order.getString("id_str")),
                                 }
                         ));
                     }
-                } catch (JSONException | DeviceServiceException e) {
+                } catch (JSONException e) {
                     e.printStackTrace();
                     Sentry.captureException(e);
                 }
