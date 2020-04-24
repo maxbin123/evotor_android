@@ -14,12 +14,6 @@ public class Contact {
     @SerializedName("photo")
     @Expose
     public String photo;
-//    @SerializedName("is_user")
-//    @Expose
-//    public String isUser;
-//    @SerializedName("is_company")
-//    @Expose
-//    public String isCompany;
     @SerializedName("email")
     @Expose
     public String email;

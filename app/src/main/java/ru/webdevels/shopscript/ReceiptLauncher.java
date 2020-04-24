@@ -77,7 +77,6 @@ public class ReceiptLauncher extends AppCompatActivity {
             RadioGroup settlementGroup = findViewById(R.id.settlement);
             RadioGroup paymentGroup = findViewById(R.id.payment);
             RadioGroup actionGroup = findViewById(R.id.action);
-//            Switch printSwitch = findViewById(R.id.print);
 
             progressBar.setVisibility(View.GONE);
             RadioButton email = findViewById(R.id.email);
@@ -97,7 +96,6 @@ public class ReceiptLauncher extends AppCompatActivity {
             actionGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
-//                    printSwitch.setEnabled(checkedId != R.id.open);
                     if (checkedId == R.id.open) {
                         paymentGroup.setVisibility(View.INVISIBLE);
                         findViewById(R.id.paymentText).setVisibility(View.INVISIBLE);
@@ -108,7 +106,7 @@ public class ReceiptLauncher extends AppCompatActivity {
                 }
             });
 
-            if (!order.params.paymentId.equals("cash")) {
+            if (!order.paymentId.equals("cash")) {
                 RadioButton electron = findViewById(R.id.electron);
                 electron.setChecked(true);
             }

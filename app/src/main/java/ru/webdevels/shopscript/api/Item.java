@@ -50,27 +50,19 @@ class Item {
     @SerializedName("tax_included")
     @Expose
     public String taxIncluded;
-    @SerializedName("product")
-    @Expose
-    public Product product;
-    @SerializedName("sku")
-    @Expose
-    private Sku sku;
-//    @SerializedName("product_codes")
-//    @Expose
-//    public List<ProductCode> productCodes = null;
     @SerializedName("expected_product_code_blocks_count")
     @Expose
     public String expectedProductCodeBlocksCount;
-//    @SerializedName("marks")
-//    @Expose
-//    public List<String > marks;
+    @SerializedName("evotor_uuid")
+    @Expose
+    public String evotorUuid;
+
 
 
     Position getPosition(SettlementMethod settlementMethod) {
         Position.Builder builder = Position.Builder.newInstance(
                 UUID.randomUUID().toString(),
-                sku.evotorUuid,
+                evotorUuid,
                 name,
                 "шт",
                 0,

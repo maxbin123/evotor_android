@@ -42,9 +42,6 @@ public class Order {
     @SerializedName("discount")
     @Expose
     public BigDecimal discount;
-    @SerializedName("params")
-    @Expose
-    public Params params;
     @SerializedName("contact")
     @Expose
     public Contact contact;
@@ -69,6 +66,9 @@ public class Order {
     @SerializedName("encoded_state_id")
     @Expose
     public String encodedStateId;
+    @SerializedName("payment_id")
+    @Expose
+    public String paymentId = "";
     @SerializedName("items")
     @Expose
     private final List<Item> items = null;
