@@ -52,6 +52,7 @@ public class ReceiptPrintService extends IntegrationService {
                 List<Position> positionList = receipt.getPositions();
                 String extra = receipt.getHeader().getExtra();
 
+
                 try {
                     JSONObject order = new JSONObject(extra);
                     if (printOrderNumber && order.has("id_str")) {
